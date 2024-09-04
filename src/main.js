@@ -7,7 +7,7 @@ import { users } from "./user.js";
 import fs from "fs";
 
 const app = express();
-const port = 3000;
+const port = 3200;
 const hostname = "localhost";
 
 app.use(express.json());
@@ -64,8 +64,6 @@ const ValidateUsername = (req, res, next) => {
 };
 
 app.post("/signup", ValidateEmail, ValidateUsername, (req, res) => {
-	console.log(req.body);
-
 	const { username, email } = req.body;
 	const id = users.length + 1;
 
@@ -80,7 +78,7 @@ app.post("/signup", ValidateEmail, ValidateUsername, (req, res) => {
 	const stringUsers = JSON.stringify(users);
 
 	fs.writeFileSync(
-		"/Users/Gbolu/Downloads/Nitdev_backend_node/src",
+		"/Users/Gbolu/Downloads/Nitdev_backend_node/src/user.js",
 		`let users = ${stringUsers}`
 	);
 
