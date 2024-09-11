@@ -10,24 +10,34 @@ const pool = new Pool({
 	password: config.db.password,
 	port: config.db.port,
 });
-
-// this code is for executing a query for your database
-export const executeQuery = (query, values = []) => {
-	return new Promise((resolve, reject) => {
-		pool.connect((err, client, done) => {
-			if (err) {
-				console.error("Error creating database connection", err.stack);
-				return reject(err);
-			}
-
-			client.query(query, values, (err, results) => {
-				done();
-				if (err) {
-					console.error("Error executing query", err);
-					return reject(err);
-				}
-				return resolve(results.rows);
-			});
-		});
-	});
+export const executeQuery = async (query, values = []) => {
+	const client = await pool.connect();
+	try {
+		const results = await client.query(query, values);
+		return results.rows;
+	} catch (error) {
+		console.error("Error executing query", err);
+	}
 };
+// this code is for executing a query for your database
+// export const executeQuery = async (query, values = []) => {
+// return new Promise((resolve, reject) => {
+// pool.connect((err, client, done) => {
+// 	if (err) {
+// 		console.error("Error creating database connection", err.stack);
+// 		return reject(err);
+// 	}
+
+// when we are using async await, we await the result.
+// in this case it is the client which is the resolved version of the connect method
+// 			client.query(query, values, (err, results) => {
+// 				done();
+// 				if (err) {
+// 					console.error("Error executing query", err);
+// 					return reject(err);
+// 				}
+// 				return resolve(results.rows);
+// 			});
+// 		});
+// 	});
+// }

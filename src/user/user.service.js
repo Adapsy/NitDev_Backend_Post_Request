@@ -60,3 +60,12 @@ export const removeUserById = async (id) => {
 		console.log(`Cannot delete user with id ${id}`, error);
 	}
 };
+export const getUserByEmail = async (email) => {
+	try {
+		const query = `SELECT * FROM users WHERE email = $1`;
+
+		const res = await executeQuery(query, [email]);
+
+		return res;
+	} catch (error) {}
+};

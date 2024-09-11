@@ -14,17 +14,40 @@ import {
 	getUsers,
 	getUserById,
 	removeUserById,
+	getUserByEmail,
 } from "./user.service.js";
+import { signupSchema } from "./user.validator.js";
+import { hashPassword } from "./utils/bcrypt.js";
 
 //post controller
 export const sign_up = async (req, res) => {
-	const { first_name, last_name, email, password } = req.body;
+	const { error, value } = signupSchema.validate(req.body);
 
-	const newUser = await createUser(first_name, last_name, email, password);
+	if (error)
+		return res.status(400).json({
+			message: error.details[0].message,
+		});
+	// error.details[0].message takes the 1st value in the error.details object and deplays the message (.message())
 
+	const { first_name, last_name, email, password } = value;
+	const hashedPassword = await hashPassword(password);
+	console.log(hashedPassword);
+	const userExists = await getUserByEmail(email);
+
+	if (userExists.length > 0)
+		return res.status(409).json({
+			message: ` User with email ${email} already exists`,
+		});
+
+	const userdetails = await createUser(
+		first_name,
+		last_name,
+		email,
+		hashedPassword
+	);
 	return res.status(201).json({
 		message: "User created",
-		newUser,
+		data: userdetails,
 	});
 };
 
@@ -61,3 +84,5 @@ export const deleteUserById = async (req, res) => {
 		delSingleUser,
 	});
 };
+
+// we can put all our funcions in a
