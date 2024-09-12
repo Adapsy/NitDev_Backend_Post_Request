@@ -16,6 +16,7 @@ import { createUserTable } from "./user/user.mod.js";
 import { createAccountTable } from "./account/account.js";
 import {
 	sign_up,
+	SigmIn,
 	getAllUsers,
 	userById,
 	deleteUserById,
@@ -31,6 +32,7 @@ app.use(express.json());
 app.get("/getusers", getAllUsers);
 
 app.get("/getuser/:id", userById);
+app.post("/signin", SigmIn);
 
 app.post("/sign-up", sign_up);
 app.delete("/delete-user/:id", deleteUserById);

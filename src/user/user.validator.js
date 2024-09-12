@@ -31,6 +31,13 @@ export const signupSchema = joi.object({
 		}),
 });
 
+export const SignInSchema = joi.object({
+	email : joi.string().email().required(),
+	password: joi.string().required()
+
+})
+
+
 // the keys i.e first_name, must be as written in the schema
 // any.required - if the password is not inputed
 // string.pattern.base - if any of the pattern is not followed

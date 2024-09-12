@@ -2,6 +2,8 @@
 // this folder can help abstract complex operations, databse queries and data validation
 // for aync wait, we add it in the try , catch block
 
+// we abstract the logic from controllers
+
 import { executeQuery } from "../config/database.js";
 
 //post user query

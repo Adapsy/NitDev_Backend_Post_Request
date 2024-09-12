@@ -10,6 +10,11 @@ export const config = {
 		name: process.env.DB_NAME,
 		port: process.env.DB_PORT,
 	},
+	Auth : { 
+		accessTokenSecretKey : process.env.TOKEN_SECRET, 
+		accessTokenExpire : process.env.AccessTokenExpire
+		
+	}
 };
 
 

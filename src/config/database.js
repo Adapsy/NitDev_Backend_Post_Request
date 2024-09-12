@@ -11,8 +11,8 @@ const pool = new Pool({
 	port: config.db.port,
 });
 export const executeQuery = async (query, values = []) => {
-	const client = await pool.connect();
 	try {
+		const client = await pool.connect();
 		const results = await client.query(query, values);
 		return results.rows;
 	} catch (error) {

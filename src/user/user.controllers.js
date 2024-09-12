@@ -16,8 +16,10 @@ import {
 	removeUserById,
 	getUserByEmail,
 } from "./user.service.js";
-import { signupSchema } from "./user.validator.js";
-import { hashPassword } from "./utils/bcrypt.js";
+import { signupSchema, SignInSchema } from "./user.validator.js";
+import { hashPassword, comparePassword } from "../utils/bcrypt.js";
+import { generateToken } from "../utils/jwt.js";
+import { sanitize } from "../utils/sanitizer.js";
 
 //post controller
 export const sign_up = async (req, res) => {
@@ -30,8 +32,11 @@ export const sign_up = async (req, res) => {
 	// error.details[0].message takes the 1st value in the error.details object and deplays the message (.message())
 
 	const { first_name, last_name, email, password } = value;
+
 	const hashedPassword = await hashPassword(password);
+
 	console.log(hashedPassword);
+
 	const userExists = await getUserByEmail(email);
 
 	if (userExists.length > 0)
@@ -39,7 +44,8 @@ export const sign_up = async (req, res) => {
 			message: ` User with email ${email} already exists`,
 		});
 
-	const userdetails = await createUser(
+	const [userdetails] = await createUser(
+		// deconstruct
 		first_name,
 		last_name,
 		email,
@@ -47,9 +53,38 @@ export const sign_up = async (req, res) => {
 	);
 	return res.status(201).json({
 		message: "User created",
-		data: userdetails,
+		data: sanitize(userdetails),
 	});
 };
+
+// signIn
+
+export const SigmIn = async (req, res) => {
+	const { error, value } = SignInSchema.validate(req.body);
+	if (error)
+		return res.status(400).json({
+			message: error.details[0].message,
+		});
+	const { email, password } = value;
+	const [user] = await getUserByEmail(email);
+	// response from the database comes back as an array so we deconstruct to get the value itself
+	if (!user)
+		return res.status(404).json({
+			message: "No user with this email",
+		});
+	const isMatch = await comparePassword(password, user.password);
+	if (!isMatch)
+		return res.status(403).json({
+			message: "invalid credentials",
+		});
+	const accessToken = generateToken(sanitize(user));
+	return res.status(200).json({
+		message: "user logged in successfully",
+		accessToken: accessToken,
+	});
+};
+
+// response from the database comes back as an array
 
 //get all users controller
 export const getAllUsers = async (req, res) => {
@@ -85,4 +120,4 @@ export const deleteUserById = async (req, res) => {
 	});
 };
 
-// we can put all our funcions in a
+// we can put all our funcions in controller
